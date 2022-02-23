@@ -5,7 +5,7 @@ import android.content.Context;
 public class HttpServiceGenerator {
 
     //Timeout, specify in SECONDS
-    private static final long TIMEOUT_RESPONSE = 30;
+    private static final long TIMEOUT_RESPONSE = 120;
 
     /**
      * Generates the instance for provided service class
