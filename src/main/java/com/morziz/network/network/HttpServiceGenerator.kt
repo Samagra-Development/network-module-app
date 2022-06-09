@@ -42,20 +42,26 @@ fun <S> generate(
     context: Context,
     type: String,
     serviceClass: Class<S>,
-    responseTimeout: Long = TIMEOUT_RESPONSE
+    responseTimeout: Long = TIMEOUT_RESPONSE,
+    moduleDependency: ModuleDependency
 ): S {
-    val key = getRetrofitKey(type, context)
+    val key = getRetrofitKey(type, context, moduleDependency)
     val retrofit: Retrofit = retrofitMap[key]
-        ?: createRetrofit(context, type, responseTimeout).also { retrofitMap[key] = it }
+        ?: createRetrofit(context, type, responseTimeout, moduleDependency).also { retrofitMap[key] = it }
     return retrofit.create(serviceClass)
 }
 
-fun createRetrofit(context: Context, type: String, responseTimeout: Long): Retrofit {
+fun createRetrofit(
+    context: Context,
+    type: String,
+    responseTimeout: Long,
+    moduleDependency: ModuleDependency
+): Retrofit {
     var builder = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create(Gson()))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .baseUrl(getIntendedUrl(context, type))
-        .client(getHttpClient(type, context, responseTimeout))
+        .baseUrl(getIntendedUrl(context, type, moduleDependency))
+        .client(getHttpClient(type, context, responseTimeout, moduleDependency))
 
     if (type == reactive || type == googleReactive) {
         builder.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -66,18 +72,23 @@ fun createRetrofit(context: Context, type: String, responseTimeout: Long): Retro
     return builder.build()
 }
 
-private fun getRetrofitKey(type: String, context: Context): String {
-    return getIntendedUrl(context, type) + type
+private fun getRetrofitKey(type: String, context: Context, moduleDependency: ModuleDependency): String {
+    return getIntendedUrl(context, type, moduleDependency) + type
 }
 
 @JvmOverloads
-fun getIntendedUrl(context: Context, type: String = normal): String {
-    return Network.getBaseUrl(type)
+fun getIntendedUrl(context: Context, type: String = normal, moduleDependency: ModuleDependency): String {
+    return moduleDependency.getBaseUrl(type)
 }
 
-private fun getHttpClient(objType: String, context: Context, responseTimeout: Long): OkHttpClient {
+private fun getHttpClient(
+    objType: String,
+    context: Context,
+    responseTimeout: Long,
+    moduleDependency: ModuleDependency
+): OkHttpClient {
 
-    var client = OkHttpClient.Builder()
+    val client = OkHttpClient.Builder()
         .readTimeout(responseTimeout, TimeUnit.SECONDS)
         .connectTimeout(TIMEOUT_CONNECTION, TimeUnit.SECONDS)
 
@@ -99,23 +110,23 @@ private fun getHttpClient(objType: String, context: Context, responseTimeout: Lo
         logging.level = HttpLoggingInterceptor.Level.BODY
     }
 
-    client.interceptors().addAll(getInterceptor(objType, context))
+    client.interceptors().addAll(getInterceptor(objType, context, moduleDependency))
 
     return client.build()
 }
 
-private fun getInterceptor(objType: String, context: Context): List<Interceptor> {
-    var intercepters = mutableListOf<Interceptor>()
+private fun getInterceptor(objType: String, context: Context, moduleDependency: ModuleDependency): List<Interceptor> {
+    val intercepters = mutableListOf<Interceptor>()
     when (objType) {
-        googleReactive -> intercepters.add(GoogleRequestHeaderInterceptor(context))
+        googleReactive -> intercepters.add(GoogleRequestHeaderInterceptor(context, moduleDependency))
         else -> {
-            intercepters.add(RequestHeaderInterceptor())
+            intercepters.add(RequestHeaderInterceptor(moduleDependency))
             intercepters.add(ConnectivityInterceptor(context))
         }
     }
     intercepters.add(logging)
-    if (Network.getExtraInterceptors() != null) {
-        for (interceptor in Network.getExtraInterceptors()!!) {
+    if (moduleDependency.getExtraInterceptors() != null) {
+        for (interceptor in moduleDependency.getExtraInterceptors()!!) {
             intercepters.add(interceptor)
         }
     }
@@ -126,7 +137,10 @@ private fun getInterceptor(objType: String, context: Context): List<Interceptor>
  * Helper class which performs the default tasks like adding query params to the [Interceptor]
  * for the GoogleDirectionsApi.
  */
-private class GoogleRequestHeaderInterceptor internal constructor(private val context: Context) :
+private class GoogleRequestHeaderInterceptor internal constructor(
+    private val context: Context,
+    private val moduleDependency: ModuleDependency
+) :
     Interceptor {
 
     @Throws(IOException::class)
@@ -134,7 +148,7 @@ private class GoogleRequestHeaderInterceptor internal constructor(private val co
         var request = chain.request()
 
         val url =
-            request.url.newBuilder().addQueryParameter("key", Network.getGoogleKey()).build()
+            request.url.newBuilder().addQueryParameter("key", moduleDependency.getGoogleKey()).build()
         request = request.newBuilder().url(url).build()
         return chain.proceed(request)
     }
@@ -144,7 +158,7 @@ private class GoogleRequestHeaderInterceptor internal constructor(private val co
 /**
  * Interceptor to add default headers to request
  */
-private class RequestHeaderInterceptor internal constructor() : Interceptor {
+private class RequestHeaderInterceptor internal constructor(private val moduleDependency: ModuleDependency) : Interceptor {
 
 
     @Throws(IOException::class)
@@ -160,7 +174,7 @@ private class RequestHeaderInterceptor internal constructor() : Interceptor {
             .addHeader("deviceManufacturer", Build.MANUFACTURER)
             .addHeader("deviceVersion", Build.VERSION.SDK_INT.toString())
 
-        Network.getHeaders()?.let {
+        moduleDependency.getHeaders()?.let {
             for (pair in it) {
                 builder.addHeader(pair.key, pair.value)
             }

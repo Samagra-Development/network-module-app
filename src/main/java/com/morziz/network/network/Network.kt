@@ -10,36 +10,15 @@ import okhttp3.Interceptor
 
 class Network {
     companion object {
-        internal var context: Context? = null
-        private lateinit var moduleDependency: ModuleDependency
+        var context: Context? = null
 
-        @JvmOverloads
-        fun init(dependency: ModuleDependency) {
-            moduleDependency = dependency
-            context = dependency.getAppContext()
-        }
+        var moduleDependency: ModuleDependency? = null
 
-        fun getBaseUrl(type: String): String {
-            return moduleDependency.getBaseUrl(type)
-        }
-
-        fun getHeaders(): HashMap<String, String>? {
-            return moduleDependency.getHeaders()
+        fun init(module: ModuleDependency) {
+            moduleDependency = module
         }
 
         fun getStringFromRes(resId: Int) = context?.getString(resId)
-
-        fun reValidateUser(code: Int) {
-            moduleDependency.reValidateUer(code)
-        }
-
-        fun getGoogleKey(): String? {
-            return moduleDependency.getGoogleKeys()
-        }
-
-        fun getExtraInterceptors(): List<Interceptor>? {
-            return moduleDependency.getExtraInterceptors()
-        }
 
         fun addNetworkConfig(config: NetworkConfig) {
             ConfigManager.getInstance().addConfig(config)
@@ -50,17 +29,10 @@ class Network {
                 val apolloClient =
                     ConfigManager.getInstance().getApolloClient(identity) ?: return null
                 return apolloClient as S
+            } else if (clientType == ClientType.RETROFIT) {
+                return ConfigManager.getInstance().getRetrofitServiceClient(identity, clazz);
             }
             return null
         }
     }
-}
-
-interface ModuleDependency {
-    fun getBaseUrl(type: String): String
-    fun getHeaders(): HashMap<String, String>?
-    fun reValidateUer(code: Int)
-    fun getGoogleKeys(): String?
-    fun getAppContext(): Context
-    fun getExtraInterceptors(): List<Interceptor>?
 }
