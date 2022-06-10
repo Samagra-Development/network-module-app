@@ -2,4 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.external.network">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application>
+        <!--        android:networkSecurityConfig="@xml/network_security_config"-->
+        <provider
+            android:name="com.morziz.network.provider.NetworkProvider"
+            android:authorities="${applicationId}.NetworkProvider"
+            android:enabled="true"
+            android:exported="false" />
+
+    </application>
 </manifest>

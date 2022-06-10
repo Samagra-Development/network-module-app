@@ -41,8 +41,8 @@ public class RetrofitClient<S> implements ApiClient<S> {
             clientMap.put(networkConfig.getIdentity(), new ModuleDependency() {
                 @Nullable
                 @Override
-                public String getGoogleKey() {
-                    return ModuleDependency.super.getGoogleKey();
+                public String getGoogleKeys() {
+                    return "";
                 }
 
                 @NonNull
@@ -60,12 +60,6 @@ public class RetrofitClient<S> implements ApiClient<S> {
                 @Override
                 public void reValidateUer(int code) {
 
-                }
-
-                @Nullable
-                @Override
-                public String getGoogleKeys() {
-                    return null;
                 }
 
                 @NonNull

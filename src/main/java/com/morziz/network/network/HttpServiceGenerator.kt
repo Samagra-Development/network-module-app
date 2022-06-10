@@ -148,7 +148,7 @@ private class GoogleRequestHeaderInterceptor internal constructor(
         var request = chain.request()
 
         val url =
-            request.url.newBuilder().addQueryParameter("key", moduleDependency.getGoogleKey()).build()
+            request.url.newBuilder().addQueryParameter("key", moduleDependency.getGoogleKeys()).build()
         request = request.newBuilder().url(url).build()
         return chain.proceed(request)
     }
