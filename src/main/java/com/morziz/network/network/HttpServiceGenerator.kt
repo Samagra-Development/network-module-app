@@ -5,6 +5,7 @@ import android.os.Build
 import com.external.network.BuildConfig
 import com.morziz.network.custom.ResultCallAdapterFactory
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.morziz.network.utils.NetworkUtils
 import com.morziz.network.helpers.NoConnectivityException
 import com.morziz.network.network.KeyType.Companion.googleReactive
@@ -57,8 +58,9 @@ fun createRetrofit(
     responseTimeout: Long,
     moduleDependency: ModuleDependency
 ): Retrofit {
+    val gson = GsonBuilder().serializeNulls().create()
     var builder = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create(Gson()))
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .baseUrl(getIntendedUrl(context, type, moduleDependency))
         .client(getHttpClient(type, context, responseTimeout, moduleDependency))
