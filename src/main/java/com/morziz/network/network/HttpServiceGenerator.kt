@@ -59,7 +59,6 @@ fun createRetrofit(
     moduleDependency: ModuleDependency
 ): Retrofit {
     val gson = GsonBuilder().serializeNulls().create()
-    gson.serializeNulls();
     var builder = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
