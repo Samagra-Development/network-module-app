@@ -3,8 +3,11 @@ package com.morziz.network.config;
 import com.apollographql.apollo.ApolloClient;
 import com.morziz.network.graphql.ApiClient;
 import com.morziz.network.graphql.GraphQLClient;
+import com.morziz.network.rest.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ConfigManager {
@@ -22,6 +25,7 @@ public class ConfigManager {
         if (configManager == null) {
             configManager = new ConfigManager();
         }
+        List<Integer> list = new ArrayList<>();
         return configManager;
     }
 
@@ -35,12 +39,17 @@ public class ConfigManager {
                 GraphQLClient.getInstance().createClient(networkConfig);
                 break;
             case RETROFIT:
-                // Functionality yet to add
+                RetrofitClient.getInstance().createClient(networkConfig);
+                break;
         }
     }
 
     public ApolloClient getApolloClient(String identity) {
         return GraphQLClient.getInstance().getClient(identity);
+    }
+
+    public <S> S getRetrofitServiceClient(String identity, Class<S> sClass) {
+        return (S) RetrofitClient.getInstance().getClient(identity, sClass);
     }
 
 }

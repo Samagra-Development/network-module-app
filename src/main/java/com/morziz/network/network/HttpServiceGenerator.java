@@ -15,12 +15,12 @@ public class HttpServiceGenerator {
      * @return instance of generated service class
      */
     @Deprecated
-    public static <S> S generate(final Context context, Class<S> serviceClass) {
-        return HttpServiceGeneratorKt.generate(context, KeyType.normal, serviceClass, TIMEOUT_RESPONSE);
+    public static <S> S generate(final Context context, Class<S> serviceClass, ModuleDependency moduleDependency) {
+        return HttpServiceGeneratorKt.generate(context, KeyType.normal, serviceClass, TIMEOUT_RESPONSE, moduleDependency);
     }
 
-    public static <S> S generateResultService(final Context context, Class<S> serviceClass) {
-        return HttpServiceGeneratorKt.generate(context, KeyType.simple, serviceClass, TIMEOUT_RESPONSE);
+    public static <S> S generateResultService(final Context context, Class<S> serviceClass, ModuleDependency moduleDependency) {
+        return HttpServiceGeneratorKt.generate(context, KeyType.simple, serviceClass, TIMEOUT_RESPONSE, moduleDependency);
     }
 
     /**
@@ -33,7 +33,7 @@ public class HttpServiceGenerator {
      * @return a reactive instance of the service class {@param <S>}.
      */
     @Deprecated
-    public static <S> S generateReactive(final Context context, Class<S> serviceClass) {
-        return HttpServiceGeneratorKt.generate(context, KeyType.reactive, serviceClass, TIMEOUT_RESPONSE);
+    public static <S> S generateReactive(final Context context, Class<S> serviceClass, ModuleDependency moduleDependency) {
+        return HttpServiceGeneratorKt.generate(context, KeyType.reactive, serviceClass, TIMEOUT_RESPONSE, moduleDependency);
     }
 }

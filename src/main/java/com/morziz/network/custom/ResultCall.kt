@@ -41,7 +41,8 @@ class ResultCall<T>(proxy: Call<T>, private val retryPolicy: RetryPolicy?) :
                         ApiResult.success(body, responseCode = code)
                     }
                 } else {
-                    Network.reValidateUser(code)
+                    // TODO
+//                    Network.reValidateUser(code)
                     var errorModel: ErrorModel? = null
                     try {
                         errorModel =

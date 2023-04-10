@@ -32,8 +32,9 @@ public class GraphQLClient implements ApiClient<ApolloClient> {
     public void createClient(NetworkConfig networkConfig) {
         if (!clientMap.containsKey(networkConfig.getIdentity())) {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.interceptors().addAll(networkConfig.getInterceptors());
-
+            if (networkConfig.getInterceptors() != null) {
+                builder.interceptors().addAll(networkConfig.getInterceptors());
+            }
             ApolloClient apolloClient = ApolloClient.builder()
                     .serverUrl(networkConfig.getBaseUrl())
                     .okHttpClient(builder.build()).build();
@@ -51,6 +52,11 @@ public class GraphQLClient implements ApiClient<ApolloClient> {
     @Override
     public ApolloClient getClient(String identity) {
         return clientMap.get(identity);
+    }
+
+    @Override
+    public ApolloClient getClient(String identity, Class<ApolloClient> sClass) {
+        return getClient(identity);
     }
 
 

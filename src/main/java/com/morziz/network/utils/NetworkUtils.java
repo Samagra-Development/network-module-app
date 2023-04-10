@@ -91,10 +91,11 @@ public class NetworkUtils {
             return true;
         }
 
-        //in case some auth issue occurred
+        //TODO
+        /*//in case some auth issue occurred
         if (shouldRevalidate && (code == 406 || code == 455 || code == 456 || code == 457)  ) {
             Network.Companion.reValidateUser(code);
-        }
+        }*/
         return false;
     }
 
