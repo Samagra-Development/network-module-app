@@ -60,4 +60,5 @@ dependencies {
     // and use apollo-api instead
     api("com.apollographql.apollo:apollo-api:2.5.11")
 
+    implementation "com.jakewharton.timber:timber:4.7.1"
 }
