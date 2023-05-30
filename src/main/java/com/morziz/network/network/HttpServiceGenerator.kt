@@ -3,15 +3,14 @@ package com.morziz.network.network
 import android.content.Context
 import android.os.Build
 import com.external.network.BuildConfig
-import com.morziz.network.custom.ResultCallAdapterFactory
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.morziz.network.utils.NetworkUtils
+import com.morziz.network.custom.ResultCallAdapterFactory
 import com.morziz.network.helpers.NoConnectivityException
 import com.morziz.network.network.KeyType.Companion.googleReactive
 import com.morziz.network.network.KeyType.Companion.normal
 import com.morziz.network.network.KeyType.Companion.reactive
 import com.morziz.network.network.KeyType.Companion.simple
+import com.morziz.network.utils.NetworkUtils
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -139,7 +138,7 @@ private fun getInterceptor(objType: String, context: Context, moduleDependency: 
  * Helper class which performs the default tasks like adding query params to the [Interceptor]
  * for the GoogleDirectionsApi.
  */
-private class GoogleRequestHeaderInterceptor internal constructor(
+private class GoogleRequestHeaderInterceptor(
     private val context: Context,
     private val moduleDependency: ModuleDependency
 ) :
@@ -160,7 +159,7 @@ private class GoogleRequestHeaderInterceptor internal constructor(
 /**
  * Interceptor to add default headers to request
  */
-private class RequestHeaderInterceptor internal constructor(private val moduleDependency: ModuleDependency) : Interceptor {
+private class RequestHeaderInterceptor(private val moduleDependency: ModuleDependency) : Interceptor {
 
 
     @Throws(IOException::class)
@@ -191,7 +190,7 @@ private class RequestHeaderInterceptor internal constructor(private val moduleDe
  * In case of no connectivity a [NoConnectivityException] is thrown and the
  * request chain is not proceeded.
  */
-private class ConnectivityInterceptor internal constructor(private val mContext: Context) :
+private class ConnectivityInterceptor(private val mContext: Context) :
     Interceptor {
 
     @Throws(IOException::class)

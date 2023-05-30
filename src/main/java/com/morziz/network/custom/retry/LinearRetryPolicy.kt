@@ -1,6 +1,5 @@
 package com.morziz.network.custom.retry
 
-import android.util.Log
 import com.morziz.network.custom.RetryPolicy
 import retrofit2.Call
 import retrofit2.Callback

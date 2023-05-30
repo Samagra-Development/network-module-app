@@ -1,17 +1,16 @@
 package com.morziz.network.custom
 
 import com.external.network.R
-import com.morziz.network.network.Network
 import com.google.gson.Gson
 import com.morziz.network.models.ApiResult
 import com.morziz.network.models.ErrorModel
 import com.morziz.network.models.ErrorType
+import com.morziz.network.network.Network
 import com.morziz.network.utils.NetworkUtils
 import okio.Timeout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 import java.net.HttpURLConnection
 
 
