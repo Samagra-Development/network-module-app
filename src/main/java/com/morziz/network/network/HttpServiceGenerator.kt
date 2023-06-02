@@ -11,6 +11,7 @@ import com.morziz.network.network.KeyType.Companion.normal
 import com.morziz.network.network.KeyType.Companion.reactive
 import com.morziz.network.network.KeyType.Companion.simple
 import com.morziz.network.utils.NetworkUtils
+import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit
 
 private const val TIMEOUT_RESPONSE: Long = 30
 private const val TIMEOUT_CONNECTION: Long = 10
+private const val CACHE_SIZE_BYTES = 1024 * 1024 * 10
 private val retrofitMap = HashMap<String, Retrofit?>()
 
 //URL's to be used
@@ -47,7 +49,12 @@ fun <S> generate(
 ): S {
     val key = getRetrofitKey(type, context, moduleDependency)
     val retrofit: Retrofit = retrofitMap[key]
-        ?: createRetrofit(context, type, responseTimeout, moduleDependency).also { retrofitMap[key] = it }
+        ?: createRetrofit(
+            context,
+            type,
+            responseTimeout,
+            moduleDependency
+        ).also { retrofitMap[key] = it }
     return retrofit.create(serviceClass)
 }
 
@@ -73,12 +80,20 @@ fun createRetrofit(
     return builder.build()
 }
 
-private fun getRetrofitKey(type: String, context: Context, moduleDependency: ModuleDependency): String {
+private fun getRetrofitKey(
+    type: String,
+    context: Context,
+    moduleDependency: ModuleDependency
+): String {
     return getIntendedUrl(context, type, moduleDependency) + type
 }
 
 @JvmOverloads
-fun getIntendedUrl(context: Context, type: String = normal, moduleDependency: ModuleDependency): String {
+fun getIntendedUrl(
+    context: Context,
+    type: String = normal,
+    moduleDependency: ModuleDependency
+): String {
     return moduleDependency.getBaseUrl(type)
 }
 
@@ -91,6 +106,7 @@ private fun getHttpClient(
 
     val client = OkHttpClient.Builder()
         .readTimeout(responseTimeout, TimeUnit.SECONDS)
+        .cache(Cache(context.cacheDir, CACHE_SIZE_BYTES.toLong()))
         .connectTimeout(TIMEOUT_CONNECTION, TimeUnit.SECONDS)
 
 
@@ -116,10 +132,19 @@ private fun getHttpClient(
     return client.build()
 }
 
-private fun getInterceptor(objType: String, context: Context, moduleDependency: ModuleDependency): List<Interceptor> {
+private fun getInterceptor(
+    objType: String,
+    context: Context,
+    moduleDependency: ModuleDependency
+): List<Interceptor> {
     val intercepters = mutableListOf<Interceptor>()
     when (objType) {
-        googleReactive -> intercepters.add(GoogleRequestHeaderInterceptor(context, moduleDependency))
+        googleReactive -> intercepters.add(
+            GoogleRequestHeaderInterceptor(
+                context,
+                moduleDependency
+            )
+        )
         else -> {
             intercepters.add(RequestHeaderInterceptor(moduleDependency))
             intercepters.add(ConnectivityInterceptor(context))
@@ -149,7 +174,8 @@ private class GoogleRequestHeaderInterceptor(
         var request = chain.request()
 
         val url =
-            request.url.newBuilder().addQueryParameter("key", moduleDependency.getGoogleKeys()).build()
+            request.url.newBuilder().addQueryParameter("key", moduleDependency.getGoogleKeys())
+                .build()
         request = request.newBuilder().url(url).build()
         return chain.proceed(request)
     }
@@ -160,7 +186,6 @@ private class GoogleRequestHeaderInterceptor(
  * Interceptor to add default headers to request
  */
 private class RequestHeaderInterceptor(private val moduleDependency: ModuleDependency) : Interceptor {
-
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
