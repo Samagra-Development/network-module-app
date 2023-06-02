@@ -1,7 +1,6 @@
 package com.morziz.network.config;
 
 import com.apollographql.apollo.ApolloClient;
-import com.morziz.network.graphql.ApiClient;
 import com.morziz.network.graphql.GraphQLClient;
 import com.morziz.network.rest.RetrofitClient;
 

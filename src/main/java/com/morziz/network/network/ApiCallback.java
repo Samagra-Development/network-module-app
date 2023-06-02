@@ -2,6 +2,7 @@ package com.morziz.network.network;
 
 import android.content.Context;
 
+import com.morziz.network.models.ApiResult;
 import com.morziz.network.models.ErrorData;
 import com.morziz.network.utils.ErrorMessagesN;
 import com.morziz.network.utils.NetworkUtils;
@@ -9,7 +10,6 @@ import com.morziz.network.utils.NetworkUtils;
 import java.io.IOException;
 import java.net.SocketException;
 
-import com.morziz.network.models.ApiResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +35,7 @@ public abstract class ApiCallback<T extends ApiResult> implements Callback<T> {
     public static final int logOnFailure = 0x4;
     public static final int logAll = logOnError | logOnSuccess | logOnFailure;
     public static final String TAG = ApiCallback.class.getSimpleName();
-    private Context context;
+    private final Context context;
     private String eventName;
     private int flags;
 

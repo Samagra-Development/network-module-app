@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 
 import com.morziz.network.helpers.NoConnectivityException;
 import com.morziz.network.models.ErrorData;
+import com.morziz.network.network.ErrorCodesNKt;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -18,8 +19,6 @@ import java.util.List;
 
 import javax.net.ssl.SSLException;
 
-import com.morziz.network.network.ErrorCodesNKt;
-import com.morziz.network.network.Network;
 import retrofit2.Response;
 
 /**
@@ -87,16 +86,13 @@ public class NetworkUtils {
 
     public static boolean isCallSuccess(final Context context, int code, boolean shouldRevalidate) {
 
-        if (code >= 200 && code < 400) {
-            return true;
-        }
+        return code >= 200 && code < 400;
 
         //TODO
         /*//in case some auth issue occurred
         if (shouldRevalidate && (code == 406 || code == 455 || code == 456 || code == 457)  ) {
             Network.Companion.reValidateUser(code);
         }*/
-        return false;
     }
 
     public static ErrorData processFailure(Throwable t) {

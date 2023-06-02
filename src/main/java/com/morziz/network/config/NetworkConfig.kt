@@ -1,8 +1,6 @@
 package com.morziz.network.config
 
 import okhttp3.Interceptor
-import java.lang.IllegalArgumentException
-import java.util.HashMap
 
 open class NetworkConfig private constructor(builder: Builder) {
     var baseUrl: String

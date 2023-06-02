@@ -5,8 +5,6 @@ import com.apollographql.apollo.ApolloClient
 import com.morziz.network.config.ClientType
 import com.morziz.network.config.ConfigManager
 import com.morziz.network.config.NetworkConfig
-import com.morziz.network.graphql.ApiClient
-import okhttp3.Interceptor
 
 class Network {
     companion object {
@@ -30,7 +28,7 @@ class Network {
                     ConfigManager.getInstance().getApolloClient(identity) ?: return null
                 return apolloClient as S
             } else if (clientType == ClientType.RETROFIT) {
-                return ConfigManager.getInstance().getRetrofitServiceClient(identity, clazz);
+                return ConfigManager.getInstance().getRetrofitServiceClient(identity, clazz)
             }
             return null
         }
